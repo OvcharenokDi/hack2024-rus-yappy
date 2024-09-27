@@ -1,0 +1,32 @@
+version: '3'
+services:
+  service:
+    build: ./service
+    ports:
+      - "9000:9000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@pgdb:5432/postgres
+    container_name: service
+    depends_on:
+      pgdb:
+        condition: service_healthy
+
+  pgdb:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    container_name: pgdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdbdata:/var/lib/postgresql/data/
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdbdata: null
