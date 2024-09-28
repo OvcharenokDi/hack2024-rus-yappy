@@ -4,7 +4,7 @@ import os
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, Column, String, DateTime, Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 Base = declarative_base()
@@ -17,6 +17,7 @@ class Duplicate(Base):
     is_duplicate = Column(Boolean, unique=False)
     duplicate_for = Column(String, unique=False)
     is_hard = Column(Boolean, unique=False)
+    is_download = Column(Boolean, unique=False, default=False)
 
 
 engine = create_engine(DATABASE_URL, echo=False)
@@ -33,3 +34,29 @@ def create(item):
         session.refresh(duplicate)
         id = duplicate.uuid
     return id
+
+def add(item):
+    with (Session(engine) as session):
+        duplicate = Duplicate(uuid=item[1], created=item[0], link=item[2])
+        session.add(duplicate)
+        session.commit()
+        session.refresh(duplicate)
+        id = duplicate.uuid
+    return id
+
+def get_duplicate_list_for_download():
+    with Session(engine) as session:
+        statement = select(Duplicate).where(Duplicate.is_download == False).order_by(Duplicate.uuid).limit(10)
+        questions = session.exec(statement)
+        result = questions.all()
+    return result
+
+def mark_download(id):
+    with Session(engine) as session:
+        statement = select(Duplicate).where(Duplicate.uuid == id)
+        results = session.exec(statement)
+        d = results.one()
+        d.is_download = True
+        session.add(d)
+        session.commit()
+        session.refresh(d)

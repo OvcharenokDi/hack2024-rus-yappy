@@ -2,8 +2,8 @@ import csv
 
 import uvicorn
 
-from file_service import check_link, load, download
-from repository import init_db, create
+from file_service import check_link, load, download, load_train
+from repository import init_db, create, add
 from fastapi import FastAPI, Body
 
 init_db()
@@ -19,13 +19,21 @@ async def post_check(data = Body()):
 
 @app.post("/init_db")
 async def init_db():
-    with open('train.csv', 'r', encoding='utf-8-sig', newline='') as file:
+    with open('../temp/train.csv', 'r', encoding='utf-8-sig', newline='') as file:
         reader = csv.reader(file)
         header = list(next(reader))
         for items in reader:
             create(items)
             print(items)
 
+@app.post("/train_db")
+async def init_db():
+    with open('../temp/train.csv', 'r', encoding='utf-8-sig', newline='') as file:
+        reader = csv.reader(file)
+        header = list(next(reader))
+        for items in reader:
+            add(items)
+            print(items)
 
 @app.post("/load")
 async def post_load(data = Body()):
@@ -34,3 +42,7 @@ async def post_load(data = Body()):
 @app.get("/download/{id}")
 async def post_download(id):
     return download(id)
+
+@app.post("/load/train")
+async def post_load_train():
+    return load_train()

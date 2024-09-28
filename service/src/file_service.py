@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import requests
 import os
 from urllib.parse import urlparse
@@ -5,6 +7,7 @@ from fastapi.responses import StreamingResponse
 import aiofiles
 
 from duplicate_service import analyze
+from service.src.repository import get_duplicate_list_for_download, mark_download
 
 CHUNK_SIZE = 1024 * 1024
 
@@ -43,6 +46,24 @@ def download(id):
     headers = {'Content-Disposition': 'attachment; filename="' + id + '.mp4"'}
     return StreamingResponse(iterfile(), headers=headers, media_type='application/octet-stream')
 
+
+def load_train():
+    while True:
+        list = get_duplicate_list_for_download()
+        if not list:
+            return
+
+        for i in list:
+            try:
+                if is_exist(i.uuid):
+                    print("File exist: " + i.link)
+                else:
+                    load(i.link)
+
+                mark_download(i.uuid)
+            except Exception as e:
+                print("error in loading", i.link)
+
 def get_name(link):
     a = urlparse(link)
     print(a.path)
@@ -50,3 +71,7 @@ def get_name(link):
 
 def get_id(name):
     return name.split(".")[0]
+
+def is_exist(id):
+    my_file = Path("../temp/files/" + id + ".mp4")
+    return my_file.is_file()
