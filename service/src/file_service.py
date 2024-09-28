@@ -39,7 +39,7 @@ def analysis(link):
 
 def load_file(link):
     name = get_name(link)
-    file_path = "../temp/files/" + name
+    file_path = "/home/user1/hack2024-rus-yappy/service/temp/files/" + name
 
     with open(file_path, 'wb') as out_file:
         content = requests.get(link, stream=True).content

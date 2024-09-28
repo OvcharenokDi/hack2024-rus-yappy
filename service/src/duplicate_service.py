@@ -3,7 +3,7 @@ from faiss_search import search
 
 
 def analyze(file_id):
-    file_path = "../temp/files/" + file_id + ".mp4"
+    file_path = "/home/user1/hack2024-rus-yappy/service/temp/files/" + file_id + ".mp4"
 
     origin_id, w = search(file_path)
 
