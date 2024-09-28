@@ -1,21 +1,25 @@
-from repository import mark_duplicate, mark_hard, get_by_id, save_weight
+from repository import mark_duplicate,mark_duplicate_test, mark_hard, get_by_id, save_weight
 from faiss_search import search
 
 
 def analyze(file_id):
     file_path = "/home/user1/hack2024-rus-yappy/service/temp/files/" + file_id + ".mp4"
 
-    origin_id, w = search(file_path)
+    model_id, w = search(file_path)
 
-    print(origin_id)
+    print(model_id)
     print(w)
-    save_weight(file_id, origin_id, str(w))
-    if w > 0.5:
-        original_id = origin_id
+
+    model_d = get_by_id(model_id)
+    file_d = get_by_id(file_id)
+
+    save_weight(file_id, model_id, str(w))
+    if w < 100 and file_d.created > model_d.created:
+        original_id = model_id
         duplicte_id = file_id
         original_time = 0
         duplicte_time = 0
-        #mark_duplicate(file_id, True, original_id)
+        mark_duplicate_test(file_id, True, original_id)
         ##mark_hard(file_id,)
     else:
         original_id = file_id

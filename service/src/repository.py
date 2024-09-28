@@ -16,6 +16,10 @@ class Duplicate(Base):
     link = Column(String, unique=False)
     is_duplicate = Column(Boolean, unique=False, default=False)
     duplicate_for = Column(String, unique=False)
+
+    is_duplicate_test = Column(Boolean, unique=False)
+    duplicate_for_test = Column(String, unique=False)
+
     is_hard = Column(Boolean, unique=False, default=False)
     is_download = Column(Boolean, unique=False, default=False)
     test_origin_uuid = Column(String, unique=False)
@@ -82,6 +86,16 @@ def mark_duplicate(id, is_duplicate, duplicate_for):
         session.commit()
         session.refresh(d)
 
+def mark_duplicate_test(id, is_duplicate, duplicate_for):
+    with Session(engine) as session:
+        statement = select(Duplicate).where(Duplicate.uuid == id)
+        results = session.exec(statement)
+        d = results.one()
+        d.is_duplicate_test = is_duplicate
+        d.duplicate_for_test = duplicate_for
+        session.add(d)
+        session.commit()
+        session.refresh(d)
 def mark_hard(id, is_hard):
     with Session(engine) as session:
         statement = select(Duplicate).where(Duplicate.uuid == id)
