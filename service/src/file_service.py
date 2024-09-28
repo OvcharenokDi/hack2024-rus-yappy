@@ -53,7 +53,7 @@ def download(id):
         load_file("https://s3.ritm.media/yappy-db-duplicates/" + id + ".mp4")
 
     async def iterfile():
-        async with aiofiles.open("../temp/files/" + id + ".mp4", 'rb') as f:
+        async with aiofiles.open("/home/user1/hack2024-rus-yappy/service/temp/files/" + id + ".mp4", 'rb') as f:
             while chunk := await f.read(CHUNK_SIZE):
                 yield chunk
 
@@ -94,7 +94,7 @@ def all_analysis():
 
 def create_csv():
     list = get_all_train()
-    with open('../temp/submission.csv', 'w') as f:
+    with open('/home/user1/hack2024-rus-yappy/service/temp/submission.csv', 'w') as f:
         f.write('created,uuid,link,is_duplicate,duplicate_for,is_hard')
         f.write('\n')
         for i in list:
@@ -113,5 +113,5 @@ def get_id(name):
 
 
 def is_exist(id):
-    my_file = Path("../temp/files/" + id + ".mp4")
+    my_file = Path("/home/user1/hack2024-rus-yappy/service/temp/files/" + id + ".mp4")
     return my_file.is_file()

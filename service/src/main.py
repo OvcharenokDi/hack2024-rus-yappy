@@ -11,7 +11,7 @@ init_db()
 app = FastAPI()
 
 if __name__ == '__main__':
-    uvicorn.run('main:app', workers=10, host="0.0.0.0", port=9001)
+    uvicorn.run('main:app', workers=2, host="0.0.0.0", port=9001)
 
 
 class LinkDto(BaseModel):
@@ -39,7 +39,7 @@ async def post_load_train(key):
 @app.post("/technical/init_db/{key}")
 async def init_db(key):
     check_key(key)
-    with open('../temp/train.csv', 'r', encoding='utf-8-sig', newline='') as file:
+    with open('/home/user1/hack2024-rus-yappy/service/temp/train.csv', 'r', encoding='utf-8-sig', newline='') as file:
         reader = csv.reader(file)
         header = list(next(reader))
         for items in reader:
@@ -49,7 +49,7 @@ async def init_db(key):
 @app.post("/technical/train_db/{key}")
 async def init_db(key):
     check_key(key)
-    with open('../temp/train.csv', 'r', encoding='utf-8-sig', newline='') as file:
+    with open('/home/user1/hack2024-rus-yappy/service/temp/train.csv', 'r', encoding='utf-8-sig', newline='') as file:
         reader = csv.reader(file)
         header = list(next(reader))
         for items in reader:

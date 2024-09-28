@@ -168,7 +168,7 @@ def search_similar_images(query_image_path, index, dataset, paths, top_k=5):
     query_vector = process_image(query_image_path)
     query_vector = np.expand_dims(query_vector, axis=0).astype('float32')
 
-    with open('../temp/minmax_scaler.pkl', 'rb') as file:
+    with open('/home/user1/faiss/minmax_scaler.pkl', 'rb') as file:
         scaler = pickle.load(file)
 
         if query_vector.shape[1] != scaler.n_features_in_:
@@ -487,7 +487,7 @@ def save_frames(frames, output_folder):
 
 
 def top_5_videos(video_path):
-    temp_dir = f'./temp/{uuid.uuid4()}'
+    temp_dir = f'/home/user1/hack2024-rus-yappy/service/temp/{uuid.uuid4()}'
     os.mkdir(temp_dir)
 
     frames = extract_frames(video_path, max_frames=60, step=30)
@@ -533,9 +533,9 @@ def top_5_videos(video_path):
 
 def search(video_path):
     # Пути к индексам и данным
-    index_path = '../temp/image_index.faiss'
-    dataset_path = '../temp/image_dataset.npy'
-    path_path = '../temp/path_dataset.npy'
+    index_path = '/home/user1/faiss/image_index.faiss'
+    dataset_path = '/home/user1/faiss/image_dataset.npy'
+    path_path = '/home/user1/faiss/path_dataset.npy'
 
     # Загрузка индекса и набора данных
     index = load_faiss_index(index_path)
