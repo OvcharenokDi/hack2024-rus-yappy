@@ -16,6 +16,7 @@ from PIL import Image, ImageOps
 from skimage.feature import local_binary_pattern
 from sklearn.metrics.pairwise import cosine_similarity
 from torchvision import models, transforms
+import re
 
 model = models.resnet50(pretrained=True)
 model.eval()
@@ -189,8 +190,8 @@ def search_similar_images(query_image_path, index, dataset, paths, top_k=5):
         return similar_images, distances[0]
 
 
-def search_similar_images_by_uuid(query_image):
-    uuid = query_image.split('/')[-1].split('_')[0]
+def search_similar_images_by_uuid(query_image, video_path_uuid):
+    uuid = get_uuid(query_image)
 
     # Выполнение поиска
     similar_images, distances = search_similar_images(query_image, index, dataset, paths, top_k=500)
@@ -201,7 +202,7 @@ def search_similar_images_by_uuid(query_image):
     print(f"Похожие изображения для {query_image}:")
     count = 0
     for img, dist in zip(similar_images, distances):
-        if not img.startswith(f"./dataset_new2/{uuid}"):
+        if not img.startswith(f"./dataset_new2/{video_path_uuid}"):
             print(f"Путь: {img}, Расстояние: {dist}")
             top_5_results.append({"img": img, "dist": dist})
             if count == 5:
@@ -303,113 +304,6 @@ def are_histograms_similar(hist1, hist2, threshold=0.7):
     return correlation > threshold
 
 
-def extract_diverse_frames(video_path, max_frames=30):
-    """
-    Извлекает максимальное количество (не более max_frames) наиболее разнообразных кадров из видео.
-    """
-    video_name = os.path.splitext(os.path.basename(video_path))[0]
-
-    cap = cv2.VideoCapture(video_path)
-    if not cap.isOpened():
-        print("Ошибка: Не удалось открыть видео.")
-        return []
-
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    selected_frames = []
-    histograms = []
-
-    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    duration = frame_count / fps
-    interval = max(1, int(frame_count / (max_frames * 2)))  # Интервалы для выбора кадров
-
-    current_frame = 0
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        # Получение текущего номера кадра
-        frame_number = cap.get(cv2.CAP_PROP_POS_FRAMES)
-
-        # Вычисление времени в секундах
-        time_seconds = frame_number / fps
-
-        if current_frame % interval == 0:
-            hist = get_frame_histogram(frame)
-
-            # Проверяем, похож ли текущий кадр на уже выбранные
-            similar = False
-            for existing_hist in histograms:
-                if are_histograms_similar(hist, existing_hist):
-                    similar = True
-                    break
-
-            if not similar:
-                selected_frames.append({"video_name": video_name, "frame": frame, "time_seconds": time_seconds})
-                histograms.append(hist)
-                if len(selected_frames) >= max_frames:
-                    break
-
-        current_frame += 1
-
-    cap.release()
-    return selected_frames
-
-
-def select_unique_frames(video_path, max_frames=30, hash_size=8, frame_interval=10):
-    """
-    Извлекает уникальные кадры из видео.
-
-    :param video_path: Путь к видеофайлу.
-    :param max_frames: Максимальное количество уникальных кадров.
-    :param hash_size: Размер хэша для сравнения (чем больше, тем точнее).
-    :param frame_interval: Интервал между кадрами для выборки.
-    :return: Список уникальных кадров в формате OpenCV.
-    """
-    # Получаем имя видео без расширения
-    video_name = os.path.splitext(os.path.basename(video_path))[0]
-
-    cap = cv2.VideoCapture(video_path)
-    if not cap.isOpened():
-        print("Ошибка открытия видео файла.")
-        return []
-
-    fps = cap.get(cv2.CAP_PROP_FPS)
-
-    unique_frames = []
-    hashes = set()
-    frame_count = 0
-
-    while cap.isOpened() and len(unique_frames) < max_frames:
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        # Получение текущего номера кадра
-        frame_number = cap.get(cv2.CAP_PROP_POS_FRAMES)
-
-        # Вычисление времени в секундах
-        time_seconds = frame_number / fps
-
-        if frame_count % frame_interval == 0:
-            # Преобразуем кадр из BGR (OpenCV) в RGB (PIL)
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            pil_image = Image.fromarray(frame_rgb)
-
-            # Вычисляем хэш кадра
-            frame_hash = imagehash.average_hash(pil_image, hash_size=hash_size)
-
-            if frame_hash not in hashes:
-                hashes.add(frame_hash)
-                unique_frames.append({"video_name": video_name, "frame": frame, "time_seconds": time_seconds})
-
-        frame_count += 1
-
-    cap.release()
-    return unique_frames
-
-
 def remove_dir(path):
     try:
         shutil.rmtree(path)
@@ -479,11 +373,22 @@ def select_representative_frames(frames, features, num_frames=5):
     return [frames[i] for i in selected_indices]
 
 
-def save_frames(frames, output_folder):
+def save_frames(frames, output_folder, video_path_uuid):
     for idx, frame in enumerate(frames):
-        filename = f"file_{idx + 1}.jpg"
+        filename = f"{video_path_uuid}_{idx + 1}.jpg"
         frame_path = os.path.join(output_folder, filename)
         plt.imsave(frame_path, frame)
+
+
+def get_uuid(file_path):
+    uuid_pattern = r'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    # Поиск UUID в строке
+    match = re.search(uuid_pattern, file_path)
+
+    if match:
+        return match.group()
+    else:
+        print('UUID не найден в строке.')
 
 
 def top_5_videos(video_path):
@@ -496,9 +401,8 @@ def top_5_videos(video_path):
     features = compute_features(frames)
     selected_frames = select_representative_frames(frames, features, num_frames=5)
 
-    # unique_frames = extract_diverse_frames(video_path)
-    # save_frames(unique_frames, temp_dir)
-    save_frames(selected_frames, temp_dir)
+    video_path_uuid = get_uuid(video_path)
+    save_frames(selected_frames, temp_dir, video_path_uuid)
 
     # extract_frames(video_path=video_path, output_dir=temp_dir)
     image_paths = glob.glob(os.path.join(temp_dir, '**', '*.jpg'), recursive=True)
@@ -509,9 +413,9 @@ def top_5_videos(video_path):
     uuid_distances = {}
 
     for query_image in sampled_image_paths:
-        top_5_video = search_similar_images_by_uuid(query_image)
+        top_5_video = search_similar_images_by_uuid(query_image, video_path_uuid)
         # Извлекаем img_uuid из пути изображения
-        img_uuid = top_5_video[0]['img'].split('/')[-1].split('_')[0]
+        img_uuid = get_uuid(top_5_video[0]['img'])
         current_dist = top_5_video[0]['dist']
 
         # Если img_uuid еще не в словаре, добавляем его с текущим расстоянием
@@ -532,13 +436,24 @@ def top_5_videos(video_path):
 
 
 def search(video_path):
+    global index_path;
+    global dataset_path;
+    global path_path;
+    global index;
+    global dataset;
+    global paths;
+    
     # Пути к индексам и данным
     index_path = '/home/user1/faiss/image_index.faiss'
     dataset_path = '/home/user1/faiss/image_dataset.npy'
     path_path = '/home/user1/faiss/path_dataset.npy'
 
     # Загрузка индекса и набора данных
-    index = load_faiss_index(index_path)
-    dataset = load_dataset(dataset_path)
-    paths = load_dataset(path_path)
+    if index is None:
+        index = load_faiss_index(index_path)
+    if dataset is None:
+        dataset = load_dataset(dataset_path)
+    if paths is None:
+        paths = load_dataset(path_path)
+    
     return top_5_videos(video_path)
