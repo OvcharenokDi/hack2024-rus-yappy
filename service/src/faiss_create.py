@@ -157,29 +157,3 @@ def create_faiss_index(data):
     index = faiss.IndexFlatL2(dimension)  # Используем L2 расстояние
     index.add(data.astype('float32'))
     return index
-
-
-# Пример использования
-if __name__ == "__main__":
-    directory = './dataset_new2'
-    dataset, paths = process_directory(directory)
-
-    # Инициализация скалера, если не передан
-    scaler = MinMaxScaler()
-
-    # Применение нормализации
-    dataset = scaler.fit_transform(dataset)
-
-    with open('../temp/newmodel/minmax_scaler.pkl', 'wb') as file:
-        pickle.dump(scaler, file)
-
-    np.save('../temp/newmodel/image_dataset.npy', dataset)
-    np.save('../temp/newmodel/path_dataset.npy', paths)
-    print(f"Количество обработанных изображений: {len(dataset)}")
-
-    # Создание индекса FAISS
-    index = create_faiss_index(dataset)
-    print("Индекс FAISS создан и обучен.")
-
-    # Сохранение индекса и данных, если необходимо
-    faiss.write_index(index, '../temp/newmodel/image_index.faiss')

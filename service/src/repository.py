@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, Column, String, DateTime, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlmodel import Session, select
 
-DATABASE_URL = os.environ["DATABASE_URL"]
+DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/postgres'
 Base = declarative_base()
 
 class Duplicate(Base):
