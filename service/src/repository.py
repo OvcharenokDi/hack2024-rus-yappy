@@ -18,7 +18,8 @@ class Duplicate(Base):
     duplicate_for = Column(String, unique=False)
     is_hard = Column(Boolean, unique=False, default=False)
     is_download = Column(Boolean, unique=False, default=False)
-    saved = Column(DateTime, default=datetime.datetime.now)
+    test_origin_uuid = Column(String, unique=False)
+    weight = Column(String, unique=False)
 
 
 engine = create_engine(DATABASE_URL, echo=False)
@@ -96,3 +97,14 @@ def get_by_id(uuid):
         results = session.exec(statement)
         result = results.one()
     return result
+
+def save_weight(id, test_id,weight):
+    with Session(engine) as session:
+        statement = select(Duplicate).where(Duplicate.uuid == id)
+        results = session.exec(statement)
+        d = results.one()
+        d.test_origin_uuid = test_id
+        d.weight = weight
+        session.add(d)
+        session.commit()
+        session.refresh(d)

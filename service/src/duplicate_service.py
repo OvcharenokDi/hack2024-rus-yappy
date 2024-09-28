@@ -1,4 +1,4 @@
-from repository import mark_duplicate, mark_hard, get_by_id
+from repository import mark_duplicate, mark_hard, get_by_id, save_weight
 from faiss_search import search
 
 
@@ -9,13 +9,13 @@ def analyze(file_id):
 
     print(origin_id)
     print(w)
-
+    save_weight(file_id, origin_id, w)
     if w > 0.5:
         original_id = origin_id
         duplicte_id = file_id
         original_time = 0
         duplicte_time = 0
-        mark_duplicate(file_id, True, original_id)
+        #mark_duplicate(file_id, True, original_id)
         ##mark_hard(file_id,)
     else:
         original_id = file_id
