@@ -25,7 +25,7 @@ def check_link(link):
     else:
         return {"is_duplicate": False, "duplicate_for": None}
 
-def load(link):
+def analysis(link):
     name = get_name(link)
     id = get_id(name)
 

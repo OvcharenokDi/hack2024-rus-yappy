@@ -3,7 +3,7 @@ import csv
 import uvicorn
 from pydantic import BaseModel
 
-from file_service import check_link, load, download, load_train
+from file_service import check_link, analysis, download, load_train
 from repository import init_db, create, add
 from fastapi import FastAPI, Body, HTTPException
 
@@ -23,9 +23,9 @@ async def post_check(linkDto: LinkDto = None):
         raise HTTPException(status_code=400)
     return check_link(linkDto.link)
 
-@app.post("/load")
+@app.post("/analysis")
 async def post_load(data = Body()):
-    return load(data["link"])
+    return analysis(data["link"])
 
 @app.get("/download/{id}")
 async def post_download(id):

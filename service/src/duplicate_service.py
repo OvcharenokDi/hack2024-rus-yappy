@@ -4,12 +4,15 @@ from repository import mark_duplicate, mark_hard, get_by_id
 def analyze(file_id):
     file_path = "../temp/files/" + file_id + ".mp4"
 
+    ##model_id = search(file_path)
+
+    original_time =0
+    duplicte_time =0
     duplicate = get_by_id(file_id)
     if duplicate.is_duplicate == True:
         original_id = duplicate.duplicate_for
-        original_time = 0
         duplicte_id = file_id
-        duplicte_time = 0
+
     else:
         original_id = file_id
         original_time = None
