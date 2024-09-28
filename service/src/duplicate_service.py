@@ -9,7 +9,7 @@ def analyze(file_id):
 
     print(origin_id)
     print(w)
-    save_weight(file_id, origin_id, w)
+    save_weight(file_id, origin_id, str(w))
     if w > 0.5:
         original_id = origin_id
         duplicte_id = file_id
