@@ -1,0 +1,52 @@
+openapi: 3.0.1
+info:
+  title: Video Duplicate Checker API
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /check-video-duplicate:
+    post:
+      tags:
+      - API для проверки дубликатов видео
+      summary: Проверка видео на дублирование
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/videoLinkRequest'
+        required: true
+      responses:
+        "200":
+          description: Результат проверки
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/videoLinkResponse'
+        "400":
+          description: Неверный запрос
+          content: {}
+        "500":
+          description: Ошибка сервера
+          content: {}
+      x-codegen-request-body-name: videoLink
+components:
+  schemas:
+    videoLinkRequest:
+      type: object
+      properties:
+        link:
+          type: string
+          description: ссылка на видео
+          example: https://example.com/video.mp4
+    videoLinkResponse:
+      type: object
+      properties:
+        is_duplicate:
+          type: boolean
+          description: признак дублирования
+          example: false
+        duplicate_for:
+          type: string
+          description: идентификтаор видео в формате uuid4
+x-original-swagger-version: "2.0"

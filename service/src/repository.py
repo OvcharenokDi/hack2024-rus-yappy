@@ -14,9 +14,9 @@ class Duplicate(Base):
     uuid = Column(String, primary_key=True)
     created = Column(DateTime, default=datetime.datetime.now)
     link = Column(String, unique=False)
-    is_duplicate = Column(Boolean, unique=False)
+    is_duplicate = Column(Boolean, unique=False, default=False)
     duplicate_for = Column(String, unique=False)
-    is_hard = Column(Boolean, unique=False)
+    is_hard = Column(Boolean, unique=False, default=False)
     is_download = Column(Boolean, unique=False, default=False)
 
 
@@ -60,3 +60,31 @@ def mark_download(id):
         session.add(d)
         session.commit()
         session.refresh(d)
+
+def mark_duplicate(id, is_duplicate, duplicate_for):
+    with Session(engine) as session:
+        statement = select(Duplicate).where(Duplicate.uuid == id)
+        results = session.exec(statement)
+        d = results.one()
+        d.is_duplicate = is_duplicate
+        d.duplicate_for = duplicate_for
+        session.add(d)
+        session.commit()
+        session.refresh(d)
+
+def mark_hard(id, is_hard):
+    with Session(engine) as session:
+        statement = select(Duplicate).where(Duplicate.uuid == id)
+        results = session.exec(statement)
+        d = results.one()
+        d.is_hard = is_hard
+        session.add(d)
+        session.commit()
+        session.refresh(d)
+
+def get_by_id(uuid):
+    with Session(engine) as session:
+        statement = select(Duplicate).where(Duplicate.uuid == uuid)
+        results = session.exec(statement)
+        result = results.one()
+    return result

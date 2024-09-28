@@ -13,13 +13,12 @@ CHUNK_SIZE = 1024 * 1024
 
 def check_link(link):
     name = get_name(link)
-    file_path = "../temp/files/" + name
+    id = get_id(name)
 
-    with open(file_path, 'wb') as out_file:
-        content = requests.get(link, stream=True).content
-        out_file.write(content)
+    if not is_exist(id):
+        load_file(link)
 
-    info = analyze(id, file_path)
+    info = analyze(id)
 
     if info["dupliacte"]["id"] is not None:
         return {"is_duplicate": True, "duplicate_for": info["origin"]["id"]}
@@ -28,16 +27,27 @@ def check_link(link):
 
 def load(link):
     name = get_name(link)
-    file_path = "../temp/files/" + name
     id = get_id(name)
+
+    if not is_exist(id):
+        load_file(link)
+
+    return analyze(id)
+
+def load_file(link):
+    name = get_name(link)
+    file_path = "../temp/files/" + name
 
     with open(file_path, 'wb') as out_file:
         content = requests.get(link, stream=True).content
         out_file.write(content)
 
-    return analyze(id, file_path)
+    return file_path
 
 def download(id):
+    if not is_exist(id):
+        load_file("https://s3.ritm.media/yappy-db-duplicates/" + id +".mp4")
+
     async def iterfile():
        async with aiofiles.open("../temp/files/" + id + ".mp4", 'rb') as f:
             while chunk := await f.read(CHUNK_SIZE):
@@ -58,7 +68,7 @@ def load_train():
                 if is_exist(i.uuid):
                     print("File exist: " + i.link)
                 else:
-                    load(i.link)
+                    load_file(i.link)
 
                 mark_download(i.uuid)
             except Exception as e:
