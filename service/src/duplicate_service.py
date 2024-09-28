@@ -8,11 +8,13 @@ def analyze(file_id):
 
     original_time =0
     duplicte_time =0
+
     duplicate = get_by_id(file_id)
     if duplicate.is_duplicate == True:
         original_id = duplicate.duplicate_for
         duplicte_id = file_id
-
+        mark_duplicate(file_id, True, original_id)
+        ##mark_hard(file_id,)
     else:
         original_id = file_id
         original_time = None

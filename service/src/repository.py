@@ -18,6 +18,7 @@ class Duplicate(Base):
     duplicate_for = Column(String, unique=False)
     is_hard = Column(Boolean, unique=False, default=False)
     is_download = Column(Boolean, unique=False, default=False)
+    saved = Column(DateTime, default=datetime.datetime.now)
 
 
 engine = create_engine(DATABASE_URL, echo=False)
@@ -47,6 +48,13 @@ def add(item):
 def get_duplicate_list_for_download():
     with Session(engine) as session:
         statement = select(Duplicate).where(Duplicate.is_download == False).order_by(Duplicate.uuid).limit(10)
+        questions = session.exec(statement)
+        result = questions.all()
+    return result
+
+def get_all_train():
+    with Session(engine) as session:
+        statement = select(Duplicate).order_by(Duplicate.saved)
         questions = session.exec(statement)
         result = questions.all()
     return result

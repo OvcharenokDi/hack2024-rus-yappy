@@ -7,9 +7,10 @@ from fastapi.responses import StreamingResponse
 import aiofiles
 
 from duplicate_service import analyze
-from service.src.repository import get_duplicate_list_for_download, mark_download
+from repository import get_duplicate_list_for_download, mark_download, get_all_train
 
 CHUNK_SIZE = 1024 * 1024
+
 
 def check_link(link):
     name = get_name(link)
@@ -25,6 +26,7 @@ def check_link(link):
     else:
         return {"is_duplicate": False, "duplicate_for": None}
 
+
 def analysis(link):
     name = get_name(link)
     id = get_id(name)
@@ -33,6 +35,7 @@ def analysis(link):
         load_file(link)
 
     return analyze(id)
+
 
 def load_file(link):
     name = get_name(link)
@@ -44,12 +47,13 @@ def load_file(link):
 
     return file_path
 
+
 def download(id):
     if not is_exist(id):
-        load_file("https://s3.ritm.media/yappy-db-duplicates/" + id +".mp4")
+        load_file("https://s3.ritm.media/yappy-db-duplicates/" + id + ".mp4")
 
     async def iterfile():
-       async with aiofiles.open("../temp/files/" + id + ".mp4", 'rb') as f:
+        async with aiofiles.open("../temp/files/" + id + ".mp4", 'rb') as f:
             while chunk := await f.read(CHUNK_SIZE):
                 yield chunk
 
@@ -74,13 +78,39 @@ def load_train():
             except Exception as e:
                 print("error in loading", i.link)
 
+
+def all_analysis():
+    list = get_all_train()
+    for i in list:
+        try:
+            if is_exist(i.uuid):
+                print("File exist: " + i.link)
+            else:
+                load_file(i.link)
+            analyze(i.uuid)
+        except Exception as e:
+            print("error in loading", i.link)
+
+
+def create_csv():
+    list = get_all_train()
+    with open('../temp/submission.csv', 'w') as f:
+        f.write('created,uuid,link,is_duplicate,duplicate_for,is_hard')
+        f.write('\n')
+        for i in list:
+            f.write(i.created.strftime("%Y-%m-%d %H:%M:%S") + "," + i.uuid + "," + i.link + "," + str(i.is_duplicate) + "," + i.duplicate_for + "," + str(i.is_hard))
+            f.write('\n')
+
+
 def get_name(link):
     a = urlparse(link)
     print(a.path)
     return os.path.basename(a.path)
 
+
 def get_id(name):
     return name.split(".")[0]
+
 
 def is_exist(id):
     my_file = Path("../temp/files/" + id + ".mp4")
