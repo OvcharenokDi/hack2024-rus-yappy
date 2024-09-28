@@ -1,18 +1,17 @@
 from repository import mark_duplicate, mark_hard, get_by_id
+from faiss_search import search
 
 
 def analyze(file_id):
     file_path = "../temp/files/" + file_id + ".mp4"
 
-    ##model_id = search(file_path)
+    info = search(file_path)
 
-    original_time =0
-    duplicte_time =0
-
-    duplicate = get_by_id(file_id)
-    if duplicate.is_duplicate == True:
-        original_id = duplicate.duplicate_for
+    if info[1] > 0.5:
+        original_id = info[0]
         duplicte_id = file_id
+        original_time = 0
+        duplicte_time = 0
         mark_duplicate(file_id, True, original_id)
         ##mark_hard(file_id,)
     else:

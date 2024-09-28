@@ -6,3 +6,9 @@ aiofiles
 sqlalchemy
 sqlmodel
 psycopg2-binary
+torch
+sklearn
+torchvision
+imagehash
+matplotlib
+faiss
