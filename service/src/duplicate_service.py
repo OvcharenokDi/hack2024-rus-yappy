@@ -19,7 +19,7 @@ def analyze(file_id):
         duplicte_id = file_id
         original_time = 0
         duplicte_time = 0
-        mark_duplicate_test(file_id, True, original_id)
+        mark_duplicate(file_id, True, original_id)
         ##mark_hard(file_id,)
     else:
         original_id = file_id
