@@ -20,6 +20,7 @@ class Duplicate(Base):
     is_download = Column(Boolean, unique=False, default=False)
     test_origin_uuid = Column(String, unique=False)
     weight = Column(String, unique=False)
+    saved = Column(DateTime, default=datetime.datetime.now)
 
 
 engine = create_engine(DATABASE_URL, echo=False)
