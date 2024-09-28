@@ -5,10 +5,13 @@ from faiss_search import search
 def analyze(file_id):
     file_path = "../temp/files/" + file_id + ".mp4"
 
-    info = search(file_path)
+    origin_id, w = search(file_path)
 
-    if info[1] > 0.5:
-        original_id = info[0]
+    print(origin_id)
+    print(w)
+
+    if w > 0.5:
+        original_id = origin_id
         duplicte_id = file_id
         original_time = 0
         duplicte_time = 0
