@@ -169,7 +169,7 @@ def search_similar_images(query_image_path, index, dataset, paths, top_k=5):
     query_vector = process_image(query_image_path)
     query_vector = np.expand_dims(query_vector, axis=0).astype('float32')
 
-    with open('/home/user1/faiss/minmax_scaler.pkl', 'rb') as file:
+    with open('/home/user1/main/current_faiss/minmax_scaler.pkl', 'rb') as file:
         scaler = pickle.load(file)
 
         if query_vector.shape[1] != scaler.n_features_in_:
@@ -202,7 +202,7 @@ def search_similar_images_by_uuid(query_image, video_path_uuid):
     print(f"Похожие изображения для {query_image}:")
     count = 0
     for img, dist in zip(similar_images, distances):
-        if not img.startswith(f"./dataset_new2/{video_path_uuid}"):
+        if video_path_uuid not in img:
             print(f"Путь: {img}, Расстояние: {dist}")
             top_5_results.append({"img": img, "dist": dist})
             if count == 5:
@@ -444,16 +444,16 @@ def search(video_path):
     global paths;
     
     # Пути к индексам и данным
-    index_path = '/home/user1/faiss/image_index.faiss'
-    dataset_path = '/home/user1/faiss/image_dataset.npy'
-    path_path = '/home/user1/faiss/path_dataset.npy'
+    index_path = '/home/user1/main/current_faiss/image_index.faiss'
+    dataset_path = '/home/user1/main/current_faiss/image_dataset.npy'
+    path_path = '/home/user1/main/current_faiss/path_dataset.npy'
 
     # Загрузка индекса и набора данных
-    if index is None:
-        index = load_faiss_index(index_path)
-    if dataset is None:
-        dataset = load_dataset(dataset_path)
-    if paths is None:
-        paths = load_dataset(path_path)
+    # if index is None:
+    index = load_faiss_index(index_path)
+    # if dataset is None:
+    dataset = load_dataset(dataset_path)
+    # if paths is None:
+    paths = load_dataset(path_path)
     
     return top_5_videos(video_path)
