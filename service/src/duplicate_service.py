@@ -1,5 +1,6 @@
 from repository import mark_duplicate,mark_duplicate_test, mark_hard, get_by_id, save_weight
 from faiss_search import search
+from similar_audio import compare_audio
 from similar2 import compare_videos
 
 ## Интерфейс анализа дубликатов
@@ -14,7 +15,7 @@ def analyze(file_id):
     model_d = get_by_id(model_id)
     file_d = get_by_id(file_id)
 
-    if file_d.created > model_d.created and compare_videos(file_path, search_file_path) > 0.95:
+    if file_d.created > model_d.created and compare_audio(file_path, search_file_path) > 0.97:
         original_id = model_id
         duplicte_id = file_id
         original_time = 0

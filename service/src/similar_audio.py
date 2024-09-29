@@ -70,7 +70,7 @@ def compare_audio_similarity(video1, video2):
     return similarity_normalized
 
 
-def compare_videos(video_path_1, video_path_2):
+def compare_audio(video_path_1, video_path_2):
     similarity_score = compare_audio_similarity(video_path_1, video_path_2)
     print(f"Похожесть аудио: {similarity_score:.4f}")
     return similarity_score
