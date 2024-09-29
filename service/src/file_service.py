@@ -94,7 +94,7 @@ def all_analysis():
 ## Генерация результат анализа в виде csv файла
 def create_csv():
     list = get_all_train()
-    with open('../temp/submission-1.csv', 'w') as f:
+    with open('/home/user1/hack2024-rus-yappy/service/temp/submission-1.csv', 'w') as f:
         f.write('created,uuid,link,is_duplicate,duplicate_for')
         f.write('\n')
         for i in list:
