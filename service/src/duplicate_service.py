@@ -1,6 +1,6 @@
 from repository import mark_duplicate,mark_duplicate_test, mark_hard, get_by_id, save_weight
 from faiss_search import search
-from similar_audio import (
+from similar_audio import compare_audio
 from similar2 import compare_videos
 
 ## Интерфейс анализа дубликатов
