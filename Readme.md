@@ -8,7 +8,7 @@
 
 /analysis - по ссылке от видео находит дубликат
 ```bash
-   curl --location 'localhost:9000/analysis' \
+   curl --location '176.123.163.85:9001/analysis' \
     --header 'Content-Type: application/json' \
     --data '{
     	"link": "https://s3.ritm.media/yappy-db-duplicates/d4341c53-cb65-4fcc-8882-fe32ff34aa34.mp4"
