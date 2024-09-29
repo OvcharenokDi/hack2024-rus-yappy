@@ -16,7 +16,7 @@ def analyze(file_id):
 
     weight2 = compare_videos(file_path, search_file_path)
     save_weight(file_id, model_id, str(w), str(weight2))
-
+    print(weight2 > 0.93)
     if weight2 > 0.93 and file_d.created > model_d.created:
         original_id = model_id
         duplicte_id = file_id
