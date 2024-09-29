@@ -82,14 +82,12 @@ def load_train():
 def all_analysis():
     list = get_all_train()
     for i in list:
-        try:
-            if is_exist(i.uuid):
-                print("File exist: " + i.link)
-            else:
-                load_file(i.link)
-            analyze(i.uuid)
-        except Exception as e:
-            print("error in loading", i.link)
+        if is_exist(i.uuid):
+            print("File exist: " + i.link)
+        else:
+            load_file(i.link)
+        analyze(i.uuid)
+
 
 ## Генерация результат анализа в виде csv файла
 def create_csv():
