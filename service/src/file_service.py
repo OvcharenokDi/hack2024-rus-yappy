@@ -11,7 +11,7 @@ from repository import get_duplicate_list_for_download, mark_download, get_all_t
 
 CHUNK_SIZE = 1024 * 1024
 
-
+## Проверка видео на дубликаты по ссылке
 def check_link(link):
     name = get_name(link)
     id = get_id(name)
@@ -36,7 +36,7 @@ def analysis(link):
 
     return analyze(id)
 
-
+## Загрузка видео
 def load_file(link):
     name = get_name(link)
     file_path = "/home/user1/hack2024-rus-yappy/service/temp/files/" + name
@@ -47,7 +47,7 @@ def load_file(link):
 
     return file_path
 
-
+## Выгрузка видео
 def download(id):
     if not is_exist(id):
         load_file("https://s3.ritm.media/yappy-db-duplicates/" + id + ".mp4")
@@ -60,7 +60,7 @@ def download(id):
     headers = {'Content-Disposition': 'attachment; filename="' + id + '.mp4"'}
     return StreamingResponse(iterfile(), headers=headers, media_type='application/octet-stream')
 
-
+## Загрузка видео
 def load_train():
     while True:
         list = get_duplicate_list_for_download()
@@ -78,7 +78,7 @@ def load_train():
             except Exception as e:
                 print("error in loading", i.link)
 
-
+## Анализ фсех видео
 def all_analysis():
     list = get_all_train()
     for i in list:
