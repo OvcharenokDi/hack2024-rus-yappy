@@ -24,6 +24,7 @@ class Duplicate(Base):
     is_download = Column(Boolean, unique=False, default=False)
     test_origin_uuid = Column(String, unique=False)
     weight = Column(String, unique=False)
+    weight_s = Column(String, unique=False)
     saved = Column(DateTime, default=datetime.datetime.now)
 
 
@@ -113,13 +114,14 @@ def get_by_id(uuid):
         result = results.one()
     return result
 
-def save_weight(id, test_id,weight):
+def save_weight(id, test_id,weight,weight_s):
     with Session(engine) as session:
         statement = select(Duplicate).where(Duplicate.uuid == id)
         results = session.exec(statement)
         d = results.one()
         d.test_origin_uuid = test_id
         d.weight = weight
+        d.weight_s = weight_s
         session.add(d)
         session.commit()
         session.refresh(d)
