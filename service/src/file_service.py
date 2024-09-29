@@ -91,7 +91,7 @@ def all_analysis():
         except Exception as e:
             print("error in loading", i.link)
 
-
+## Генерация результат анализа в виде csv файла
 def create_csv():
     list = get_all_train()
     with open('../temp/submission-1.csv', 'w') as f:
