@@ -14,9 +14,7 @@ def analyze(file_id):
     model_d = get_by_id(model_id)
     file_d = get_by_id(file_id)
 
-    audio_w = compare_videos(file_path, search_file_path)
-
-    if float(audio_w) > 0.97 and file_d.created > model_d.created:
+    if file_d.created > model_d.created and compare_videos(file_path, search_file_path) > 0.95:
         original_id = model_id
         duplicte_id = file_id
         original_time = 0
@@ -35,6 +33,6 @@ def analyze(file_id):
         duplicte_time = None
 
 
-    save_weight(file_id, model_id, str(w), str(audio_w))
+    save_weight(file_id, model_id, str(w), None)
 
     return {"origin":{"id": original_id, "time" : original_time},"dupliacte": {"id": duplicte_id, "time" : duplicte_time}}
