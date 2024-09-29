@@ -16,13 +16,7 @@ def analyze(file_id):
     file_d = get_by_id(file_id)
 
     audio_w = compare_audio(file_path, search_file_path)
-    if file_d.created > model_d.created and float(audio_w) > 0.97:
-        original_id = model_id
-        duplicte_id = file_id
-        original_time = 0
-        duplicte_time = 0
-        mark_duplicate(file_id, True, original_id)
-    elif w <= 135 and file_d.created > model_d.created:
+    if file_d.created > model_d.created and float(audio_w) > 0.98 and w <= 140:
         original_id = model_id
         duplicte_id = file_id
         original_time = 0
