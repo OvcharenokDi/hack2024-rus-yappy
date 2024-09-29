@@ -94,11 +94,15 @@ def all_analysis():
 
 def create_csv():
     list = get_all_train()
-    with open('/home/user1/hack2024-rus-yappy/service/temp/submission.csv', 'w') as f:
+    with open('../temp/submission-1.csv', 'w') as f:
         f.write('created,uuid,link,is_duplicate,duplicate_for')
         f.write('\n')
         for i in list:
-            f.write(i.created.strftime("%Y-%m-%d %H:%M:%S") + "," + i.uuid + "," + i.link + "," + str(i.is_duplicate) + "," + i.duplicate_for)
+            if i.duplicate_for is None:
+                fo =''
+            else:
+                fo = i.duplicate_for
+            f.write(i.created.strftime("%Y-%m-%d %H:%M:%S") + "," + i.uuid + "," + i.link + "," + str(i.is_duplicate) + "," + fo)
             f.write('\n')
 
 
